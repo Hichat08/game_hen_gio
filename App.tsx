@@ -128,6 +128,14 @@ const App: React.FC = () => {
       <footer className="z-10 mb-8 text-center">
         <p className="text-slate-500 text-[10px] uppercase tracking-[0.3em]">Càng lâu càng dễ say</p>
       </footer>
+      <div className="footer z-10 mb-6 text-center px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+        <div className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
+          © 2026 – Phiên bản 1.1.2
+        </div>
+        <div className="mt-1 text-sm text-slate-200">
+          Nhà phát triển: <span className="font-extrabold text-white">LÒ VĂN VIỆT</span>
+        </div>
+      </div>
 
       {result && (
         <ResultOverlay 
