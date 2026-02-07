@@ -13,11 +13,30 @@ const App: React.FC = () => {
   // Audio refs
   const tickAudio = useRef<HTMLAudioElement | null>(null);
   const explosionAudio = useRef<HTMLAudioElement | null>(null);
+  const bgAudio = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     tickAudio.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
     explosionAudio.current = new Audio('https://assets.mixkit.co/active_storage/sfx/1002/1002-preview.mp3');
     tickAudio.current.loop = true;
+    bgAudio.current = new Audio('/bgm.mp3');
+    bgAudio.current.loop = true;
+    bgAudio.current.volume = 0;
+  }, []);
+
+  const fadeVolumeTo = useCallback((audio: HTMLAudioElement | null, target: number, duration = 700) => {
+    if (!audio) return;
+    const start = performance.now();
+    const from = audio.volume;
+    const clampedTarget = Math.max(0, Math.min(1, target));
+
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      audio.volume = from + (clampedTarget - from) * t;
+      if (t < 1) requestAnimationFrame(step);
+    };
+
+    requestAnimationFrame(step);
   }, []);
 
   const startGame = () => {
@@ -26,6 +45,10 @@ const App: React.FC = () => {
     if (tickAudio.current) {
       tickAudio.current.playbackRate = 1.0;
       tickAudio.current.play().catch(() => {});
+    }
+    if (bgAudio.current) {
+      bgAudio.current.play().catch(() => {});
+      fadeVolumeTo(bgAudio.current, 0.35, 900);
     }
   };
 
@@ -40,10 +63,11 @@ const App: React.FC = () => {
     if (explosionAudio.current) {
       explosionAudio.current.play().catch(() => {});
     }
+    fadeVolumeTo(bgAudio.current, 0.08, 600);
     if ('vibrate' in navigator) {
       navigator.vibrate([100, 50, 500]);
     }
-  }, []);
+  }, [fadeVolumeTo]);
 
   const toggleDirection = () => {
     setDirection(prev => prev === 'CW' ? 'CCW' : 'CW');
@@ -112,6 +136,7 @@ const App: React.FC = () => {
           onRestart={() => {
             setGameState('IDLE');
             setResult(null);
+            fadeVolumeTo(bgAudio.current, 0.25, 600);
           }} 
         />
       )}
